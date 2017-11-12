@@ -3,8 +3,8 @@ from django import forms
 
 class FormatForm(forms.Form):
     OPTIONS = (
-        ("a", "Wild"),
-        ("b", "Standard")
+        ("wild", "Wild"),
+        ("standard", "Standard")
     )
     deck_format = forms.MultipleChoiceField(widget=forms.CheckboxSelectMultiple, choices=OPTIONS)
 
