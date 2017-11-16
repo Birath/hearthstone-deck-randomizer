@@ -4,7 +4,7 @@ import sys
 from bs4 import BeautifulSoup
 
 
-def hearthpwn_scarper(user_name, player_class):
+def hearthpwn_scarper(user_name):
     """ Get users collection from hearthpwn and returns it as list
     of tuples with card name and card count
     Parameters:
@@ -12,32 +12,30 @@ def hearthpwn_scarper(user_name, player_class):
     """
     url = "http://www.hearthpwn.com/members/{}/collection".format(user_name)
     page = requests.get(url)
-    soup = BeautifulSoup(page.content, 'html.parser')
-    owned_cards = soup.find_all(True, {"data-card-class":[player_class.upper(), "NONE"], 'class': 'owns-card'})
+    # Encodes the page as a string to store in session
+    page_content = page.content.decode('utf-8')
+    return page_content
+
+
+def get_filtered_collection(collection_page, player_class):
+    """
+    Filter out cards from classes other than the chosen one
+    :param collection_page: Users collection from hearthpwn as a html page,
+    :param player_class: Chosen hero
+    :return: A list of all owned cards of the chosen hero + neutrals
+    """
+    # Card_collection is wrapped in a list in order to be stored in a session
+    collection_page = collection_page[0].encode()
+    card_collection = BeautifulSoup(collection_page, 'html.parser')
+    owned_cards = card_collection.find_all(True, {"data-card-class":
+                                             [player_class.upper(), "NONE"],
+                                             'class': 'owns-card'})
     owned_cards_data = []
-    # dups = []
     for card_data in owned_cards:
         card_name = card_data['data-card-name']
-        card_count = int(card_data.find(class_='inline-card-count')['data-card-count'])
-        # print(card_name, card_count)
-        # print(any(map(lambda x: card_name == x[0], owned_cards_data)))
-        # Checks for Only add
-        # if not any(map(lambda x: card_name in x[0], owned_cards_data)):
-        # if card_count >= 2:
-        #    owned_cards_data.append((card_name, card_count))
-        #    owned_cards_data.append((card_name, card_count))
-        # else:
+        card_count = int(card_data.find(
+            class_='inline-card-count')['data-card-count'])
         owned_cards_data.append((card_name, card_count))
-        # else:
-        #   dups.append((card_name, card_count))
-    # for dup in dups:
-    #    print(dup)
-        """
-        if card['data-card-name'] not in owned_cards_data:
-            owned_cards_data.append((card_name, card_count))
-        else:
-            print("found duplicate")
-        """
 
     return owned_cards_data
 
@@ -46,24 +44,19 @@ def create_dbfid_deck(deck):
     """Takes a hearthstone deck and returns a list
      containing dbf id's of all cards and the amount in the deck
 
-    :param deck: a list of a hearthstone deck, where each card is a list of information
+    :param deck: a list of a hearthstone deck, where each card is a list
+    of information
     :return:
     """
     seen = []
     res = []
     for card_data in deck:
-        print(card_data)
         if card_data not in seen:
             res.append((int(card_data[3]), 1))
             seen.append(card_data)
         else:
-            print("Contains dups")
             card_to_update = res.index((int(card_data[3]), 1))
             res[card_to_update] = (int(card_data[3]), 2)
-    for dbid in res:
-        print(dbid, ",")
-    for s in seen:
-        print(s)
     return res
 
 
@@ -80,7 +73,6 @@ def get_current_standard_sets():
         print("Failed to decode response, possibly empty")
         print("Response:", response.text)
         sys.exit(-1)
-    print(sets["standard"])
     return sets["standard"]
 
 

@@ -34,7 +34,8 @@ def update_card_db(cards):
     print("Populating card database...")
     for cardset, cards in cards.items():
         # Remove non cards that are marked as collectible
-        if cardset not in ["Hero Skins", "Tavern Brawl", "Missions", "Credits", "System", "Debug"]:
+        if cardset not in ["Hero Skins", "Tavern Brawl", "Missions", "Credits",
+                           "System", "Debug"]:
             for card_data in cards:
                 # An exception is required for death knights
                 if card_data["type"] != "Hero":
@@ -47,10 +48,14 @@ def update_card_db(cards):
                         c.set = card_data["cardSet"]
                         c.save()
                     except Card.DoesNotExist:
-                        c = Card(name=card_data["name"], hero=card_data["playerClass"], img_url=card_data["img"],
-                                 dbfId=card_data["dbfId"], set=card_data["cardSet"])
+                        c = Card(name=card_data["name"],
+                                 hero=card_data["playerClass"],
+                                 img_url=card_data["img"],
+                                 dbfId=card_data["dbfId"],
+                                 set=card_data["cardSet"])
                     c.save()
-                elif card_data["type"] == "Hero" and card_data["rarity"] == "Legendary":
+                elif (card_data["type"] == "Hero" and
+                      card_data["rarity"] == "Legendary"):
                     try:
                         c = Card.objects.get(name__exact=card_data["name"])
                         c.name = card_data["name"]
@@ -60,6 +65,9 @@ def update_card_db(cards):
                         c.set = card_data["cardSet"]
                         c.save()
                     except Card.DoesNotExist:
-                        c = Card(name=card_data["name"], hero=card_data["playerClass"], img_url=card_data["img"],
-                                 dbfId=card_data["dbfId"], set=card_data["cardSet"])
+                        c = Card(name=card_data["name"],
+                                 hero=card_data["playerClass"],
+                                 img_url=card_data["img"],
+                                 dbfId=card_data["dbfId"],
+                                 set=card_data["cardSet"])
                         c.save()

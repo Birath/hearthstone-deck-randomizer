@@ -6,7 +6,7 @@ class FormatForm(forms.Form):
         ("wild", "Wild"),
         ("standard", "Standard")
     )
-    deck_format = forms.MultipleChoiceField(widget=forms.CheckboxSelectMultiple, choices=OPTIONS)
+    deck_format = forms.ChoiceField(widget=forms.Select, choices=OPTIONS)
 
 
 class NameForm(forms.Form):
