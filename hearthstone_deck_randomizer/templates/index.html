@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Hearthstone deck randomizer</title>
+</head>
+<body>
+    <h1>Hearthstone deck randomizer</h1>
+    {% if no_collection %}
+        <h2>Enter your hearthpwn username and class you want to play.</h2>
+        <form action="" method="post">
+            {% csrf_token  %}
+           {% comment %} <input type="text" name="user_name" id="user_name" size="21" maxlength="150" />
+            <input type="text" name="class" id="class" size="21" maxlength="150" />{% endcomment %}
+            {{ name_form }}
+            {{ hero_form }}
+            {{ format_form }}
+            <input type="submit" value="Enter"/>
+        </form>
+    {% endif %}
+</body>
+</html>
