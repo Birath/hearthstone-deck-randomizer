@@ -1,6 +1,8 @@
 import requests
 import json
 import sys
+import configparser
+import os
 from bs4 import BeautifulSoup
 
 
@@ -61,10 +63,19 @@ def create_dbfid_deck(deck):
 
 
 def get_current_standard_sets():
-    """ Gets all current sets in standard mode from omgvamp's mashape
-    Hearthstone API and returns them as a json object"""
+    """
+    Gets all current sets in standard mode from omgvamp's Mashape
+    Hearthstone API and returns them as a JSON object
+    :return: A JSON object if api request is successful, else false
+    """
     url = "https://omgvamp-hearthstone-v1.p.mashape.com/info"
-    mashape_key = "29ivbg2fYEmshQaND2mqbZPrtyG6p11uiSQjsnyKBEOkALj6J1"
+    # Get api key from config file
+    config = configparser.ConfigParser()
+    config_path = os.path.join(os.path.abspath(os.path.dirname(
+        os.path.dirname(__file__))),
+        "config.ini")
+    config.read(config_path)
+    mashape_key = config["Mashape"]["mashapekey"]
     headers = {"X-Mashape-Key": mashape_key}
     response = requests.get(url, headers=headers)
     # Raises error if bad response

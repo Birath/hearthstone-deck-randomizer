@@ -60,8 +60,8 @@ def generate_deck(request):
     hero_id = {"priest": 813, "warrior": 7, "rogue": 930, "mage": 637,
                "shaman": 1066, "paladin": 671, "hunter": 31,
                "warlock": 893, "druid": 274}
+    # False if bad api request, TODO add way to automatically updated
     standard_sets = get_current_standard_sets()
-
     if not standard_sets:
         standard_sets = ["Basic", "Classic", "Whispers of the Old Gods",
                          "One Night in Karazhan",
