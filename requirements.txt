@@ -1,0 +1,4 @@
+hearthstone
+django
+requests
+bs4

@@ -1,7 +1,6 @@
 import json
-import sys
-
 import requests
+import configparser
 from deck_randomizer.models import Card
 
 
@@ -12,16 +11,19 @@ def get_cards():
     :return: A JSON object of all current collectible cards
     """
     # NOTE Remove this later
-    mashape_key = "29ivbg2fYEmshQaND2mqbZPrtyG6p11uiSQjsnyKBEOkALj6J1"
+    config = configparser.ConfigParser()
+    config.read('config.ini')
+    mashape_key = config["Mashape"]["mashapekey"]
     url = "https://omgvamp-hearthstone-v1.p.mashape.com/cards?collectible=1"
     headers = {"X-Mashape-Key": mashape_key}
     response = requests.get(url, headers=headers)
+    response.raise_for_status()
     try:
         cards = json.loads(response.text)
     except json.decoder.JSONDecodeError:
         print("Failed to decode response, possibly empty")
         print("Response:", response.text)
-        sys.exit(-1)
+        return
     return cards
 
 
