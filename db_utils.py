@@ -6,8 +6,11 @@ from deck_randomizer.models import Card
 
 
 def get_cards():
-    """ Gets all current collectible cards from omgvamp's mashape
-    Hearthstone API, and returns them as a json object"""
+    """
+    Gets all current collectible cards from omgvamp's Mashape
+    Hearthstone API, and returns them as a json object"
+    :return: A JSON object of all current collectible cards
+    """
     # NOTE Remove this later
     mashape_key = "29ivbg2fYEmshQaND2mqbZPrtyG6p11uiSQjsnyKBEOkALj6J1"
     url = "https://omgvamp-hearthstone-v1.p.mashape.com/cards?collectible=1"
@@ -23,18 +26,18 @@ def get_cards():
 
 
 def update_card_db(cards):
-    """ Updates the card database
+    """
+    Updates the card database
     Usage: run python manage.py shell, import Card model and this file,
     get all current cards from get_cards and then run update_card_db
-
-    Parameters:
-        cards -- a json object containing the cards to updated
+    :param cards: a json object containing the cards to update
+    :return: None
     """
     # First clears the database
-    # Card.objects.all().delete()
+    # TODO Move database update into separate function
     print("Populating card database...")
     for cardset, cards in cards.items():
-        # Remove non cards that are marked as collectible
+        # Check that current item actually is a collectible card
         if cardset not in ["Hero Skins", "Tavern Brawl", "Missions", "Credits",
                            "System", "Debug"]:
             for card_data in cards:
@@ -55,6 +58,7 @@ def update_card_db(cards):
                                  dbfId=card_data["dbfId"],
                                  set=card_data["cardSet"])
                     c.save()
+                # Death knights are of the type hero and are legendary
                 elif (card_data["type"] == "Hero" and
                       card_data["rarity"] == "Legendary"):
                     try:
