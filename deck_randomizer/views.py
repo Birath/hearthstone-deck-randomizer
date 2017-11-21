@@ -5,13 +5,13 @@ from deck_randomizer.forms import FormatForm, NameForm, HeroForm
 from deck_randomizer.models import Card
 from deck_randomizer.utils import hearthpwn_scarper, \
     get_current_standard_sets, create_dbfid_deck, get_filtered_collection
-# Create your views here.
 from django.http import HttpResponseRedirect
 from django.shortcuts import render
 from hearthstone import deckstrings
 from hearthstone.enums import FormatType
 
 
+# Create your views here.
 def index(request):
     if request.method != 'POST':
         hero_form = HeroForm()
@@ -61,11 +61,21 @@ def generate_deck(request):
                "shaman": 1066, "paladin": 671, "hunter": 31,
                "warlock": 893, "druid": 274}
     standard_sets = get_current_standard_sets()
+
+    if not standard_sets:
+        standard_sets = ["Basic", "Classic", "Whispers of the Old Gods",
+                         "One Night in Karazhan",
+                         "Mean Streets of Gadgetzan",
+                         "Journey to Un'Goro",
+                         "Knights of the Frozen Throne",
+                         "Kobolds & Catacombs"]
+
     filtered_collection = []
     # Get card data from the database by card name
     # card[0] name of card, card[1] amount of copies owned
     time_before = int(round(time.time() * 1000))
     for card in hero_collection:
+        print("Card", type(card[0]))
         card_object = Card.objects.get(name__exact=card[0])
         # Only add cards from standard format if standard format is chosen
         if deck_format == FormatType.FT_STANDARD and card_object.set\

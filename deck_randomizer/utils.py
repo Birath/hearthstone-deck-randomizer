@@ -25,7 +25,7 @@ def get_filtered_collection(collection_page, player_class):
     :return: A list of all owned cards of the chosen hero + neutrals
     """
     # Card_collection is wrapped in a list in order to be stored in a session
-    collection_page = collection_page[0].encode()
+    collection_page = collection_page.encode()
     card_collection = BeautifulSoup(collection_page, 'html.parser')
     owned_cards = card_collection.find_all(True, {"data-card-class":
                                              [player_class.upper(), "NONE"],
@@ -67,6 +67,11 @@ def get_current_standard_sets():
     mashape_key = "29ivbg2fYEmshQaND2mqbZPrtyG6p11uiSQjsnyKBEOkALj6J1"
     headers = {"X-Mashape-Key": mashape_key}
     response = requests.get(url, headers=headers)
+    # Raises error if bad response
+    try:
+        response.raise_for_status()
+    except requests.exceptions.HTTPError:
+        return False
     try:
         sets = json.loads(response.text)
     except json.decoder.JSONDecodeError:
