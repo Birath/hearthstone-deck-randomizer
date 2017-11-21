@@ -1,5 +1,5 @@
 from django.apps import AppConfig
 
 
-class HsRandomizerConfig(AppConfig):
+class DeckRandomizerConfig(AppConfig):
     name = 'deck_randomizer'

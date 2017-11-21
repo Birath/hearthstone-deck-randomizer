@@ -3,7 +3,7 @@ import time
 
 from deck_randomizer.forms import FormatForm, NameForm, HeroForm
 from deck_randomizer.models import Card
-from deck_randomizer_project.methods import hearthpwn_scarper, \
+from deck_randomizer.utils import hearthpwn_scarper, \
     get_current_standard_sets, create_dbfid_deck, get_filtered_collection
 # Create your views here.
 from django.http import HttpResponseRedirect
