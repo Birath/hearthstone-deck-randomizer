@@ -21,5 +21,6 @@ urlpatterns = [
     url(r'^admin/', admin.site.urls),
     url(r'^$', views.index, name="index"),
     url(r'^index', views.index, name="index"),
-    url(r'^deck', views.generate_deck, name='generate_deck')
+    url(r'^deck', views.generate_deck, name='generate_deck'),
+    url(r'^submit', views.update_test, name='update')
 ]

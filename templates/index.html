@@ -8,15 +8,41 @@
     <h1>Hearthstone deck randomizer</h1>
     {% if no_collection %}
         <h2>Enter your hearthpwn username and class you want to play.</h2>
-        <form action="" method="post">
+        <form>
             {% csrf_token  %}
            {% comment %} <input type="text" name="user_name" id="user_name" size="21" maxlength="150" />
             <input type="text" name="class" id="class" size="21" maxlength="150" />{% endcomment %}
             {{ name_form }}
             {{ hero_form }}
             {{ format_form }}
-            <input type="submit" value="Enter"/>
+           <input type="button" value="Enter" id="submit"/>
+{#             <button type="button" id=“sender”>Send data</button><br>#}
         </form>
     {% endif %}
+    <p id="update_text">Your answer goes here!</p>
+<script
+  src="https://code.jquery.com/jquery-3.2.1.min.js"
+  integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4="
+  crossorigin="anonymous">
+</script>
 </body>
+
+<script>
+    $('#submit').click(function () {
+        event.preventDefault();
+        console.log('Clicked');
+        $.ajax({
+            url: 'submit',
+            data: {
+                'name' : $('#id_name').val(),
+                'hero' : $('#id_hero').val(),
+                'format' : $('#id_deck_format').val()
+            },
+            dataType: 'json',
+            success: function (data) {
+                document.getElementById('update_text').innerHTML = data['response'];
+            }
+        });
+    });
+</script>
 </html>

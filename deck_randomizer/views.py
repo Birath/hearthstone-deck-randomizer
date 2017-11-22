@@ -5,7 +5,7 @@ from deck_randomizer.forms import FormatForm, NameForm, HeroForm
 from deck_randomizer.models import Card
 from deck_randomizer.utils import hearthpwn_scarper, \
     get_current_standard_sets, create_dbfid_deck, get_filtered_collection
-from django.http import HttpResponseRedirect
+from django.http import HttpResponseRedirect, JsonResponse
 from django.shortcuts import render
 from hearthstone import deckstrings
 from hearthstone.enums import FormatType
@@ -24,22 +24,23 @@ def index(request):
             "hero_form": hero_form
         }
         return render(request, "index.html", context)
-    else:
-        hero_form = HeroForm(request.POST)
-        name_form = NameForm(request.POST)
-        format_form = FormatForm(request.POST)
-        forms = [hero_form, name_form, format_form]
-        if all(map(lambda x: x.is_valid(), forms)):
-            request.session["user_name"] = name_form.cleaned_data['name']
-            request.session['hero'] = hero_form.cleaned_data['hero']
-            request.session['format'] = format_form.cleaned_data['deck_format']
-            return HttpResponseRedirect('/deck/')
+    # else:
+    #     hero_form = HeroForm(request.POST)
+    #     name_form = NameForm(request.POST)
+    #     format_form = FormatForm(request.POST)
+    #     forms = [hero_form, name_form, format_form]
+    #     if all(map(lambda x: x.is_valid(), forms)):
+    #         request.session["user_name"] = name_form.cleaned_data['name']
+    #         request.session['hero'] = hero_form.cleaned_data['hero']
+    #         request.session['format'] = format_form.cleaned_data['deck_format']
+    #         return HttpResponseRedirect('/deck/')
 
 
 def generate_deck(request):
 
     hearthpwn_user_name = request.session.get('user_name')
     desired_class = request.session.get('hero')
+    # Format is stored in list, so we have to turn it to a string
     deck_format = request.session.get('format')[0]
 
     if deck_format == "standard":
@@ -116,3 +117,19 @@ def generate_deck(request):
         "deckstring": deckstring
     }
     return render(request, "deck.html", context)
+
+
+def update_test(request):
+    # https://stackoverflow.com/questions/45906858/update-dom-without-reloading-the-page-in-django
+    print("I got here")
+    name = request.GET.get('name')
+    hero = request.GET.get('hero')
+    deck_format = request.GET.get('format')
+    answer = 'Your hearthpwn name is {} and you choose {} in the {} ' \
+             'format'.format(name, hero, deck_format)
+
+    data = {
+        'response': answer
+    }
+    return JsonResponse(data)
+
