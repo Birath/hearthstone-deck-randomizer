@@ -1,14 +1,16 @@
 import random
 import time
 
-from deck_randomizer.forms import FormatForm, NameForm, HeroForm
-from deck_randomizer.models import Card
-from deck_randomizer.utils import hearthpwn_scarper, \
-    get_current_standard_sets, create_dbfid_deck, get_filtered_collection
-from django.http import HttpResponseRedirect, JsonResponse
+from django.http import JsonResponse
 from django.shortcuts import render
 from hearthstone import deckstrings
 from hearthstone.enums import FormatType
+
+from deck_randomizer.forms import FormatForm, NameForm, HeroForm
+from deck_randomizer.models import Card
+from deck_randomizer.utils import hearthpwn_scarper, \
+    get_current_standard_sets, create_dbfid_deck, get_filtered_collection, \
+    get_amount_of_cards
 
 
 # Create your views here.
@@ -18,32 +20,15 @@ def index(request):
         name_form = NameForm()
         format_form = FormatForm()
         context = {
-            "no_collection": True,
             "name_form": name_form,
             "format_form": format_form,
             "hero_form": hero_form
         }
         return render(request, "index.html", context)
-        # else:
-        #     hero_form = HeroForm(request.POST)
-        #     name_form = NameForm(request.POST)
-        #     format_form = FormatForm(request.POST)
-        #     forms = [hero_form, name_form, format_form]
-        #     if all(map(lambda x: x.is_valid(), forms)):
-        #         request.session["user_name"] = name_form.cleaned_data['name']
-        #         request.session['hero'] = hero_form.cleaned_data['hero']
-        #         request.session['format'] = format_form.cleaned_data['deck_format']
-        #         return HttpResponseRedirect('/deck/')
 
 
 def generate_deck(request):
-    print()
-    # hearthpwn_user_name = request.session.get('user_name')
-    # desired_class = request.session.get('hero')
-    # Format is stored in list, so we have to turn it to a string
-    # deck_format = request.session.get('format')[0]
 
-    hearthpwn_user_name = request.GET.get('name')
     desired_class = request.GET.get('hero')
     deck_format = request.GET.get('format')
 
@@ -52,14 +37,8 @@ def generate_deck(request):
     else:
         deck_format = FormatType.FT_WILD
 
-    # Get collection from session if possible, saves time due to no request
-    # if not request.session.get('full_collection', default=False):
-    print("Getting collection from Hearthpwn")
-    full_collection = hearthpwn_scarper(hearthpwn_user_name)
-    request.session["full_collection"] = full_collection
-    # else:
-    #    print("Getting collection from session")
-    #    full_collection = request.session.get("full_collection")
+    print("Getting collection from session")
+    full_collection = request.session.get("full_collection")
 
     hero_collection = get_filtered_collection(full_collection, desired_class)
     hero_id = {"priest": 813, "warrior": 7, "rogue": 930, "mage": 637,
@@ -76,11 +55,8 @@ def generate_deck(request):
                          "Kobolds & Catacombs"]
 
     filtered_collection = []
-    # Get card data from the database by card name
-    # card[0] name of card, card[1] amount of copies owned
     time_before = int(round(time.time() * 1000))
     for card in hero_collection:
-        print("Card", type(card[0]))
         card_object = Card.objects.get(name__exact=card[0])
         # Only add cards from standard format if standard format is chosen
         if deck_format == FormatType.FT_STANDARD and card_object.set \
@@ -92,9 +68,6 @@ def generate_deck(request):
                 filtered_collection += [[card_object.name,
                                          card_object.img_url, card[1],
                                          card_object.dbfId]] * 2
-                # filtered_collection.append([card_object.name,
-                #                             card_object.img_url,
-                #                             card[1], card_object.dbfId])
             else:
                 filtered_collection.append([card_object.name,
                                             card_object.img_url,
@@ -103,10 +76,6 @@ def generate_deck(request):
 
     # Create a deck by picking 30 random cards
     random_deck = random.sample(filtered_collection, 30)
-    # Debug
-    # with open("random_deck.txt", "+w") as f:
-    #     for card in random_deck:
-    #         f.write(card[0] + "\n")
 
     # Creates the deckstring the hearthstone python module
     db_deck = create_dbfid_deck(random_deck)
@@ -122,6 +91,24 @@ def generate_deck(request):
     }
 
     return render(request, "deck.html", context)
+
+
+def import_collection(request):
+    name = request.GET.get('name')
+    full_collection = hearthpwn_scarper(name)
+    if full_collection is False:
+        answer = "Could not import collection. Make sure that your " \
+                 "collection is set to public and try again "
+
+    else:
+        request.session["full_collection"] = full_collection
+        cards_owned = get_amount_of_cards(full_collection)
+        answer = "Imported {} cards from {}'s collection".format(cards_owned,
+                                                                 name)
+    data = {
+        "response": answer
+    }
+    return JsonResponse(data)
 
 
 def update_test(request):

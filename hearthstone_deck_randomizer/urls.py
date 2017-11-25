@@ -22,5 +22,7 @@ urlpatterns = [
     url(r'^$', views.index, name="index"),
     url(r'^index', views.index, name="index"),
     url(r'^deck', views.generate_deck, name='generate_deck'),
-    url(r'^submit', views.update_test, name='update')
+    url(r'^submit', views.update_test, name='update'),
+    url(r'^import_collection', views.import_collection,
+        name='import_collection')
 ]

@@ -6,21 +6,18 @@
 </head>
 <body>
     <h1>Hearthstone deck randomizer</h1>
-    {% if no_collection %}
-        <h2>Enter your hearthpwn username and class you want to play.</h2>
-        <form>
-            {% csrf_token  %}
-           {% comment %}  <input type="text" name="user_name" id="user_name" size="21" maxlength="150" />
-            <input type="text" name="class" id="class" size="21" maxlength="150" /> {% endcomment %}
-            {{ name_form }}
-            {{ hero_form }}
-            {{ format_form }}
-           <input type="button" value="Enter" id="submit"/>
-{#             <button type="button" id=“sender”>Send data</button><br>#}
-        </form>
-    {% endif %}
-    <p id="update_text">Your answer goes here!</p>
-
+    <form>
+        {% csrf_token %}
+        {{ name_form }}
+        <input type="button" value="Import Collection" id="import-collection"/>
+    </form>
+    <p id="import-response"></p>
+    <form>
+        {% csrf_token  %}
+        {{ hero_form }}
+        {{ format_form }}
+       <input type="button" value="Enter" id="submit"/>
+    </form>
     <div id="deck">
         {% include 'deck.html' %}
     </div>
@@ -35,37 +32,41 @@
 </body>
 
 <script>
+    $('#import-collection').click(function () {
+        event.preventDefault();
+        console.log('Importing collection');
+        document.getElementById('import-response').innerHTML = "Importing collection...";
+        $.ajax({
+            url: 'import_collection',
+            data: {
+                'name':  $('#id_name').val()
+            },
+            dataType: 'json',
+            success: function (data) {
+                document.getElementById('import-response').innerHTML = data['response']
+            }
+        })
+
+    });
+    // Sends chosen class and format to the server and which generate
+    // and returns a deck which is rendered
     $('#submit').click(function () {
         event.preventDefault();
         console.log('Clicked');
         $.ajax({
             url: 'deck',
             data: {
-                'name' : $('#id_name').val(),
                 'hero' : $('#id_hero').val(),
                 'format' : $('#id_deck_format').val()
             },
             dataType: 'html',
             success: function (data) {
                 console.log('Loading html');
-                $('#deck').html('').load(
-                    "/deck"
-                )
-                //document.getElementById('update_text').innerHTML = data['response'];
+                $('#deck').html(data)
+
             }
 
         })
-        render_deck()
     });
 </script>
-
-<script>
-    function render_deck() {
-        console.log('Loading html');
-        $('#deck').html('').load(
-                "{% url 'generate_deck' %}"
-        )
-    }
-</script>
-
 </html>

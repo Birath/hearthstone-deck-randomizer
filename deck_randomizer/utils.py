@@ -14,9 +14,21 @@ def hearthpwn_scarper(user_name):
     """
     url = "http://www.hearthpwn.com/members/{}/collection".format(user_name)
     page = requests.get(url)
-    # Encodes the page as a string to store in session
-    page_content = page.content.decode('utf-8')
-    return page_content
+    response = BeautifulSoup(page.content, 'html.parser')
+    if not response.find(text='Not found') is None:
+        return False
+
+    else:
+        # Encodes the page as a string to store in session
+        page_content = response.decode('utf-8')
+        return page_content
+
+
+def get_amount_of_cards(collection_content):
+    collection_page = BeautifulSoup(collection_content.encode(), 'html.parser')
+    amount_of_cards = len(collection_page.find_all(True,
+                                                   {'class': 'owns-card'}))
+    return amount_of_cards
 
 
 def get_filtered_collection(collection_page, player_class):
@@ -26,7 +38,6 @@ def get_filtered_collection(collection_page, player_class):
     :param player_class: Chosen hero
     :return: A list of all owned cards of the chosen hero + neutrals
     """
-    # Card_collection is wrapped in a list in order to be stored in a session
     collection_page = collection_page.encode()
     card_collection = BeautifulSoup(collection_page, 'html.parser')
     owned_cards = card_collection.find_all(True, {"data-card-class":
