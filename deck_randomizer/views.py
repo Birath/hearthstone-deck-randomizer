@@ -24,24 +24,28 @@ def index(request):
             "hero_form": hero_form
         }
         return render(request, "index.html", context)
-    # else:
-    #     hero_form = HeroForm(request.POST)
-    #     name_form = NameForm(request.POST)
-    #     format_form = FormatForm(request.POST)
-    #     forms = [hero_form, name_form, format_form]
-    #     if all(map(lambda x: x.is_valid(), forms)):
-    #         request.session["user_name"] = name_form.cleaned_data['name']
-    #         request.session['hero'] = hero_form.cleaned_data['hero']
-    #         request.session['format'] = format_form.cleaned_data['deck_format']
-    #         return HttpResponseRedirect('/deck/')
+        # else:
+        #     hero_form = HeroForm(request.POST)
+        #     name_form = NameForm(request.POST)
+        #     format_form = FormatForm(request.POST)
+        #     forms = [hero_form, name_form, format_form]
+        #     if all(map(lambda x: x.is_valid(), forms)):
+        #         request.session["user_name"] = name_form.cleaned_data['name']
+        #         request.session['hero'] = hero_form.cleaned_data['hero']
+        #         request.session['format'] = format_form.cleaned_data['deck_format']
+        #         return HttpResponseRedirect('/deck/')
 
 
 def generate_deck(request):
-
-    hearthpwn_user_name = request.session.get('user_name')
-    desired_class = request.session.get('hero')
+    print()
+    # hearthpwn_user_name = request.session.get('user_name')
+    # desired_class = request.session.get('hero')
     # Format is stored in list, so we have to turn it to a string
-    deck_format = request.session.get('format')[0]
+    # deck_format = request.session.get('format')[0]
+
+    hearthpwn_user_name = request.GET.get('name')
+    desired_class = request.GET.get('hero')
+    deck_format = request.GET.get('format')
 
     if deck_format == "standard":
         deck_format = FormatType.FT_STANDARD
@@ -49,13 +53,13 @@ def generate_deck(request):
         deck_format = FormatType.FT_WILD
 
     # Get collection from session if possible, saves time due to no request
-    if not request.session.get('full_collection', default=False):
-        print("Getting collection from Hearthpwn")
-        full_collection = hearthpwn_scarper(hearthpwn_user_name)
-        request.session["full_collection"] = full_collection
-    else:
-        print("Getting collection from session")
-        full_collection = request.session.get("full_collection")
+    # if not request.session.get('full_collection', default=False):
+    print("Getting collection from Hearthpwn")
+    full_collection = hearthpwn_scarper(hearthpwn_user_name)
+    request.session["full_collection"] = full_collection
+    # else:
+    #    print("Getting collection from session")
+    #    full_collection = request.session.get("full_collection")
 
     hero_collection = get_filtered_collection(full_collection, desired_class)
     hero_id = {"priest": 813, "warrior": 7, "rogue": 930, "mage": 637,
@@ -79,15 +83,15 @@ def generate_deck(request):
         print("Card", type(card[0]))
         card_object = Card.objects.get(name__exact=card[0])
         # Only add cards from standard format if standard format is chosen
-        if deck_format == FormatType.FT_STANDARD and card_object.set\
+        if deck_format == FormatType.FT_STANDARD and card_object.set \
                 not in standard_sets:
             pass
         else:
             # Add two cards if user owns more than two copies
             if card[1] >= 2:
                 filtered_collection += [[card_object.name,
-                                        card_object.img_url, card[1],
-                                        card_object.dbfId]] * 2
+                                         card_object.img_url, card[1],
+                                         card_object.dbfId]] * 2
                 # filtered_collection.append([card_object.name,
                 #                             card_object.img_url,
                 #                             card[1], card_object.dbfId])
@@ -116,6 +120,7 @@ def generate_deck(request):
         "cards": random_deck,
         "deckstring": deckstring
     }
+
     return render(request, "deck.html", context)
 
 
@@ -132,4 +137,3 @@ def update_test(request):
         'response': answer
     }
     return JsonResponse(data)
-

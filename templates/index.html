@@ -10,8 +10,8 @@
         <h2>Enter your hearthpwn username and class you want to play.</h2>
         <form>
             {% csrf_token  %}
-           {% comment %} <input type="text" name="user_name" id="user_name" size="21" maxlength="150" />
-            <input type="text" name="class" id="class" size="21" maxlength="150" />{% endcomment %}
+           {% comment %}  <input type="text" name="user_name" id="user_name" size="21" maxlength="150" />
+            <input type="text" name="class" id="class" size="21" maxlength="150" /> {% endcomment %}
             {{ name_form }}
             {{ hero_form }}
             {{ format_form }}
@@ -20,11 +20,18 @@
         </form>
     {% endif %}
     <p id="update_text">Your answer goes here!</p>
+
+    <div id="deck">
+        {% include 'deck.html' %}
+    </div>
+
+
 <script
   src="https://code.jquery.com/jquery-3.2.1.min.js"
   integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4="
   crossorigin="anonymous">
 </script>
+
 </body>
 
 <script>
@@ -32,17 +39,33 @@
         event.preventDefault();
         console.log('Clicked');
         $.ajax({
-            url: 'submit',
+            url: 'deck',
             data: {
                 'name' : $('#id_name').val(),
                 'hero' : $('#id_hero').val(),
                 'format' : $('#id_deck_format').val()
             },
-            dataType: 'json',
+            dataType: 'html',
             success: function (data) {
-                document.getElementById('update_text').innerHTML = data['response'];
+                console.log('Loading html');
+                $('#deck').html('').load(
+                    "/deck"
+                )
+                //document.getElementById('update_text').innerHTML = data['response'];
             }
-        });
+
+        })
+        render_deck()
     });
 </script>
+
+<script>
+    function render_deck() {
+        console.log('Loading html');
+        $('#deck').html('').load(
+                "{% url 'generate_deck' %}"
+        )
+    }
+</script>
+
 </html>
