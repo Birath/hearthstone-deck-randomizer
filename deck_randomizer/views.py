@@ -1,5 +1,4 @@
 import random
-import time
 
 from django.http import JsonResponse
 from django.shortcuts import render
@@ -44,7 +43,7 @@ def generate_deck(request):
     hero_id = {"priest": 813, "warrior": 7, "rogue": 930, "mage": 637,
                "shaman": 1066, "paladin": 671, "hunter": 31,
                "warlock": 893, "druid": 274}
-    # False if bad api request, TODO add way to automatically updated
+    # False if bad api request, TODO add way to automatically update
     standard_sets = get_current_standard_sets()
     if not standard_sets:
         standard_sets = ["Basic", "Classic", "Whispers of the Old Gods",
@@ -55,7 +54,6 @@ def generate_deck(request):
                          "Kobolds & Catacombs"]
 
     filtered_collection = []
-    time_before = int(round(time.time() * 1000))
     for card in hero_collection:
         card_object = Card.objects.get(name__exact=card[0])
         # Only add cards from standard format if standard format is chosen
@@ -72,7 +70,6 @@ def generate_deck(request):
                 filtered_collection.append([card_object.name,
                                             card_object.img_url,
                                             card[1], card_object.dbfId])
-    print("DB time", int(round(time.time() * 1000)) - time_before)
 
     # Create a deck by picking 30 random cards
     random_deck = random.sample(filtered_collection, 30)
@@ -97,8 +94,8 @@ def import_collection(request):
     name = request.GET.get('name')
     full_collection = hearthpwn_scarper(name)
     if full_collection is False:
-        answer = "Could not import collection. Make sure that your " \
-                 "collection is set to public and try again "
+        answer = "Could not import collection. Make sure that your hearthpwn" \
+                 "collection is set to public and try again"
 
     else:
         request.session["full_collection"] = full_collection

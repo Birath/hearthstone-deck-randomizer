@@ -1,6 +1,8 @@
-import json
-import requests
 import configparser
+import json
+
+import requests
+
 from deck_randomizer.models import Card
 
 
@@ -47,34 +49,43 @@ def update_card_db(cards):
                 if card_data["type"] != "Hero":
                     try:
                         c = Card.objects.get(name__exact=card_data["name"])
-                        c.name = card_data["name"]
-                        c.hero = card_data["playerClass"]
-                        c.img_url = card_data["img"]
-                        c.dbfId = card_data["dbfId"]
-                        c.set = card_data["cardSet"]
-                        c.save()
+                        update_card(c, card_data)
                     except Card.DoesNotExist:
-                        c = Card(name=card_data["name"],
-                                 hero=card_data["playerClass"],
-                                 img_url=card_data["img"],
-                                 dbfId=card_data["dbfId"],
-                                 set=card_data["cardSet"])
-                    c.save()
+                        add_card(card_data)
                 # Death knights are of the type hero and are legendary
                 elif (card_data["type"] == "Hero" and
                       card_data["rarity"] == "Legendary"):
                     try:
                         c = Card.objects.get(name__exact=card_data["name"])
-                        c.name = card_data["name"]
-                        c.hero = card_data["playerClass"]
-                        c.img_url = card_data["img"]
-                        c.dbfId = card_data["dbfId"]
-                        c.set = card_data["cardSet"]
-                        c.save()
+                        update_card(c, card_data)
                     except Card.DoesNotExist:
-                        c = Card(name=card_data["name"],
-                                 hero=card_data["playerClass"],
-                                 img_url=card_data["img"],
-                                 dbfId=card_data["dbfId"],
-                                 set=card_data["cardSet"])
-                        c.save()
+                        add_card(card_data)
+
+
+def update_card(card, card_data):
+    """
+    Takes a card object from the database and updates it with new data
+    :param card: A card object
+    :param card_data: A dictionary with info about card
+    :return: None
+    """
+    card.name = card_data["name"]
+    card.hero = card_data["playerClass"]
+    card.img_url = card_data["img"]
+    card.dbfId = card_data["dbfId"]
+    card.set = card_data["cardSet"]
+    card.save()
+
+
+def add_card(card_data):
+    """
+    Adds a new card to the database
+    :param card_data: The data of the card to be added
+    :return: None
+    """
+    card = Card(name=card_data["name"],
+                hero=card_data["playerClass"],
+                img_url=card_data["img"],
+                dbfId=card_data["dbfId"],
+                set=card_data["cardSet"])
+    card.save()
