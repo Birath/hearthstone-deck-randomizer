@@ -152,5 +152,5 @@ crashlytics-build.properties
 fabric.properties
 
 # Project specific files
-.config.ini
-static/*
+config.ini
+static/admin/*
