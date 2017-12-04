@@ -74,6 +74,15 @@ def generate_deck(request):
     # Create a deck by picking 30 random cards
     random_deck = random.sample(filtered_collection, 30)
 
+    final_deck = []
+    for card in random_deck:
+        if card == random_deck[0]:
+            final_deck.append((card[0], 1))
+        elif card in final_deck:
+            final_deck[final_deck.index(card)][1] = 2
+        else:
+            final_deck.append((card[0], 1))
+
     # Creates the deckstring the hearthstone python module
     db_deck = create_dbfid_deck(random_deck)
     deck = deckstrings.Deck()
@@ -83,7 +92,7 @@ def generate_deck(request):
     deckstring = deck.as_deckstring
 
     context = {
-        "cards": random_deck,
+        "cards": final_deck,
         "deckstring": deckstring
     }
 
@@ -94,7 +103,7 @@ def import_collection(request):
     name = request.GET.get('name')
     full_collection = hearthpwn_scarper(name)
     if full_collection is False:
-        answer = "Could not import collection. Make sure that your hearthpwn" \
+        answer = "Could not import collection. Make sure that your hearthpwn "\
                  "collection is set to public and try again"
 
     else:

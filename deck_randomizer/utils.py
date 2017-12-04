@@ -16,16 +16,23 @@ def hearthpwn_scarper(user_name):
     url = "http://www.hearthpwn.com/members/{}/collection".format(user_name)
     page = requests.get(url)
     response = BeautifulSoup(page.content, 'html.parser')
-    if not response.find(text='Not found') is None:
+    if response.find(text='Not found') is not None or \
+            response.find(text='This user has no collection') is not None:
         return False
 
     else:
-        # Encodes the page as a string to store in session
+        # Decodes the page as a string to store in session
+        # TODO Figure out why this works
         page_content = response.decode('utf-8')
         return page_content
 
 
 def get_amount_of_cards(collection_content):
+    """
+    Calculates the amount of cards in a collection
+    :param collection_content: A collection decoded in utf-8
+    :return: Total amount of cards in a collection
+    """
     collection_page = BeautifulSoup(collection_content.encode(), 'html.parser')
     amount_of_cards = len(collection_page.find_all(True,
                                                    {'class': 'owns-card'}))
@@ -102,45 +109,3 @@ def get_current_standard_sets():
         print("Response:", response.text)
         sys.exit(-1)
     return sets["standard"]
-
-
-if __name__ == "__main__":
-    collection = hearthpwn_scarper("Fuddu", "mage")
-
-    with open("collection.txt", "+w") as f:
-        for card in collection:
-            f.write(card[0] + "\n")
-    # update_card_db(get_cards())
-
-    TEST_DECKSTRING_CARDLIST = (
-        (38521, 1),  # Alleycat
-        (308, 1),  # Jeweled Macaw
-        (38408, 1),  # Cat Trick
-        (985, 1),  # Crackling Razormaw
-        (41524, 1),  # Dinomancy
-        (443, 1),  # Freezing Trap
-        (43029, 1),  # Kindly Grandmother
-        (1686, 1),  # Stubborn Gastropod
-        (40496, 1),  # Animal Companion
-        (609, 1),  # Eaglehorn Bow
-        (40921, 1),  # Eggnapper
-        (790, 1),  # Kill Command
-        (45307, 1),  # Rat Pack
-        (39003, 1),  # Houndmaster
-        (768, 1),  # Infested Wolf
-        (42782, 1),  # Nesting Roc
-        (41257, 1),  # Tundra Rhino
-        (281, 1),  # Savannah Highmane
-        (41318, 1),  # Savannah Highmane 46204
-        (997, 1),  # Savannah Highmane
-        (40409, 1),  # Savannah Highmane
-        (41076, 1),  # Savannah Highmane
-        (38412, 1),  # Savannah Highmane
-        (366, 1),  # Savannah Highmane 1086
-        (641, 1),  # Savannah Highmane
-        (41286, 1),  # Savannah Highmane
-        (40906, 1),  # Savannah Highmane
-        (41926, 1),  # Savannah Highmane
-        (662, 1),  # Savannah Highmane
-        (138, 1)  # Savannah Highmane
-    )

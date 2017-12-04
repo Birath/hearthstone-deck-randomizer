@@ -7,7 +7,7 @@
 <body>
     {% if cards %}
         <p>{{ deckstring }}</p>
-        {% for card_name, card_url, card_amount, card_id in cards %}
+        {% for card_name, card_amount in cards %}
             <p>{{ card_name }}, {{ card_amount }}</p>
         {% endfor %}
 
