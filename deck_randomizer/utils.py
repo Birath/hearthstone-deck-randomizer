@@ -11,7 +11,7 @@ def hearthpwn_scarper(user_name):
     """ Get users collection from hearthpwn and returns it as list
     of tuples with card name and card count
     Parameters:
-        user_name -- Hearthpwn user_name
+        user_name -- Hearthpwn user name
     """
     url = "http://www.hearthpwn.com/members/{}/collection".format(user_name)
     page = requests.get(url)
