@@ -16,8 +16,9 @@ def hearthpwn_scarper(user_name):
     url = "http://www.hearthpwn.com/members/{}/collection".format(user_name)
     page = requests.get(url)
     response = BeautifulSoup(page.content, 'html.parser')
-    if response.find(text='Not found') is not None or \
-            response.find(text='This user has no collection') is not None:
+    if response.find(text='Not found') is not None \
+       or response.find(text='This user has no collection') is not None \
+       or response.find(text="This user's collection is private.") is not None:
         return False
 
     else:
@@ -49,8 +50,9 @@ def get_filtered_collection(collection_page, player_class):
     collection_page = collection_page.encode()
     card_collection = BeautifulSoup(collection_page, 'html.parser')
     owned_cards = card_collection.find_all(True, {"data-card-class":
-                                             [player_class.upper(), "NONE"],
-                                             'class': 'owns-card'})
+                                                      [player_class.upper(),
+                                                       "NONE"],
+                                                  'class': 'owns-card'})
     owned_cards_data = []
     for card_data in owned_cards:
         card_name = card_data['data-card-name']
