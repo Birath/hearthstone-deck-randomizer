@@ -3,8 +3,8 @@
 <head>
     <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
       <!--Import materialize.css-->
-
-    <link type="text/css" rel="stylesheet" href="../static/css/materialize.min.css"  media="screen,projection"/>
+    {% load static %}
+    <link type="text/css" rel="stylesheet" href="{% static "deck_randomizer/css/materialize.min.css" %}"  media="screen,projection"/>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/materialize/0.100.2/css/materialize.min.css">
 
       <!--Let browser know website is optimized for mobile-->
@@ -15,25 +15,28 @@
 </head>
 <body>
     <div class="row">
-        <div class="col s3">
+        <div class="col s3" id="forms">
             <h1>Hearthstone deck randomizer</h1>
-            <form>
+            <form method="post" id="import-collection">
                 {% csrf_token %}
                 {{ name_form }}
-                <input type="button" value="Import Collection" id="import-collection"/>
+                <button class="waves-effect waves-light btn" id="import-collection">Import collection</button>
             </form>
             <p id="import-response"></p>
-            <form>
+            <div id="import-loader"></div>
+            <form method="post" id="deck-data">
                 {% csrf_token  %}
                 {{ hero_form }}
                 <div class="input-field">
-                    {{ format_form }}
+                    {{ format_form.deck_format }}
+                    {{ format_form.deck_format.label_tag }}
                 </div>
-                <input type="button" value="Enter" id="submit"/>
-                <a class="waves-effect waves-light btn">button</a>
+                <button class="waves-effect waves-light btn" id="deck-data">
+                    Enter
+                </button>
             </form>
         </div>
-        <div id="deck" class="col s3">
+        <div id="deck" class="col s6">
             {% include 'deck.html' %}
         </div>
     </div>
@@ -42,45 +45,10 @@
 <script src="https://code.jquery.com/jquery-3.2.1.min.js" integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4=" crossorigin="anonymous"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/0.100.2/js/materialize.min.js"></script>
 {% load static %}
-<script src="{% static "js/main.js" %}"></script>
+<script src="{% static "deck_randomizer/js/main.js" %}"></script>
 </body>
 
 <script>
-    $('#import-collection').click(function () {
-        event.preventDefault();
-        console.log('Importing collection');
-        document.getElementById('import-response').innerHTML = "Importing collection...";
-        $.ajax({
-            url: 'import_collection',
-            data: {
-                'name':  $('#id_name').val()
-            },
-            dataType: 'json',
-            success: function (data) {
-                document.getElementById('import-response').innerHTML = data['response']
-            }
-        })
 
-    });
-    // Sends chosen class and format to the server and which generate
-    // and returns a deck which is rendered
-    $('#submit').click(function () {
-        event.preventDefault();
-        console.log('Clicked');
-        $.ajax({
-            url: 'deck',
-            data: {
-                'hero' : $('#id_hero').val(),
-                'format' : $('#id_deck_format').val()
-            },
-            dataType: 'html',
-            success: function (data) {
-                console.log('Loading html');
-                $('#deck').html(data)
-
-            }
-
-        })
-    });
 </script>
 </html>
