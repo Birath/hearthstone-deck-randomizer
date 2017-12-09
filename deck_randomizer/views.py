@@ -87,7 +87,10 @@ def generate_deck(request):
     db_deck = create_dbfid_deck(random_deck)
     deck = deckstrings.Deck()
     deck.cards = db_deck
-    deck.heroes = [hero_id[desired_class.lower()]]
+    if desired_class == "random":
+        deck.heroes = [random.choice(list(hero_id.values()))]
+    else:
+        deck.heroes = [hero_id[desired_class.lower()]]
     deck.format = deck_format
     deckstring = deck.as_deckstring
 

@@ -18,6 +18,7 @@ def get_cards():
     mashape_key = config["Mashape"]["mashapekey"]
     url = "https://omgvamp-hearthstone-v1.p.mashape.com/cards?collectible=1"
     headers = {"X-Mashape-Key": mashape_key}
+    print("Getting cards from API")
     response = requests.get(url, headers=headers)
     response.raise_for_status()
     try:
@@ -32,8 +33,8 @@ def get_cards():
 def update_card_db(cards):
     """
     Updates the card database
-    Usage: run python manage.py shell, import Card model and this file,
-    get all current cards from get_cards and then run update_card_db
+    Usage: run python manage.py shell, import the card model Card and this
+    file, get all current cards from get_cards and then run update_card_db
     :param cards: a json object containing the cards to update
     :return: None
     """

@@ -14,4 +14,16 @@ class NameForm(forms.Form):
 
 
 class HeroForm(forms.Form):
-    hero = forms.CharField()
+    OPTIONS = (
+        ("random", "Random"),
+        ("hunter", "Hunter"),
+        ("shaman", "Shaman"),
+        ("priest", "Priest"),
+        ("mage", "Mage"),
+        ("warrior", "Warrior"),
+        ("warlock", "Warlock"),
+        ("paladin", "Paladin"),
+        ("druid", "Druid"),
+        ("rogue", "Rogue")
+    )
+    hero = forms.ChoiceField(widget=forms.Select, choices=OPTIONS)

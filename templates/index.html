@@ -26,13 +26,16 @@
             <div id="import-loader"></div>
             <form method="post" id="deck-data">
                 {% csrf_token  %}
-                {{ hero_form }}
+                <div class="input-field">
+                    {{ hero_form.hero }}
+                    {{ hero_form.hero.label_tag }}
+                </div>
                 <div class="input-field">
                     {{ format_form.deck_format }}
                     {{ format_form.deck_format.label_tag }}
                 </div>
                 <button class="waves-effect waves-light btn" id="deck-data">
-                    Enter
+                    Generate Deck
                 </button>
             </form>
         </div>
