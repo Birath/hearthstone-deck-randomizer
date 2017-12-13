@@ -6,11 +6,12 @@ class FormatForm(forms.Form):
         ("wild", "Wild"),
         ("standard", "Standard")
     )
-    deck_format = forms.ChoiceField(widget=forms.Select, choices=OPTIONS)
+    deck_format = forms.ChoiceField(widget=forms.Select, choices=OPTIONS,
+                                    label="Format")
 
 
 class NameForm(forms.Form):
-    name = forms.CharField()
+    name = forms.CharField(label="Hearthpwn username")
 
 
 class HeroForm(forms.Form):
@@ -26,4 +27,5 @@ class HeroForm(forms.Form):
         ("druid", "Druid"),
         ("rogue", "Rogue")
     )
-    hero = forms.ChoiceField(widget=forms.Select, choices=OPTIONS)
+    hero = forms.ChoiceField(widget=forms.Select, choices=OPTIONS,
+                             label="Class")

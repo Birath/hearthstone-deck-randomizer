@@ -47,23 +47,93 @@ $(document).ready(function() {
     });
 
     $('#import-collection').on('submit', function () {
-    event.preventDefault();
-    console.log('Importing collection');
-    document.getElementById('import-response').innerHTML = "Importing collection...";
-    document.getElementById('import-loader').innerHTML = smallRedLoader;
-    $.ajax({
-        url: 'import_collection',
-        data: {
-            'name':  $('#id_name').val()
-        },
-        dataType: 'json',
-        success: function (data) {
-            document.getElementById('import-loader').innerHTML = "";
-            document.getElementById('import-response').innerHTML = data['response']
-        }
+        event.preventDefault();
+        console.log('Importing collection');
+        document.getElementById('import-response').innerHTML = "Importing collection...";
+        document.getElementById('import-loader').innerHTML = smallRedLoader;
+        $.ajax({
+            url: 'import_collection',
+            data: {
+                'name':  $('#id_name').val()
+            },
+            dataType: 'json',
+            success: function (data) {
+                document.getElementById('import-loader').innerHTML = "";
+                document.getElementById('import-response').innerHTML = data['response']
+            }
+        })
+    });
+    $(document).on('click','#copyButton', function () {
+        copyToClipboard(document.getElementById("deckstring"));
     })
-
-});
 });
 
+function copyDeckString() {
+    var copyText = document.getElementById("deckstring");
+    copyText.select();
+    var hello = document.execCommand('copy');
+    console.log(copyText.select());
+    try {
+        var successful = document.execCommand('copy');
+        var msg = successful ? 'successful' : 'unsuccessful';
+        console.log('Copying text command was ' + msg);
+    } catch (err) {
+        console.log('Oops, unable to copy');
+    }
+}
+
+// Taken from https://stackoverflow.com/questions/22581345/click-button-copy-to-clipboard-using-jquery
+
+
+function copyToClipboard(elem) {
+	  // create hidden text element, if it doesn't already exist
+    console.log("Copying");
+    var targetId = "_hiddenCopyText_";
+    var isInput = elem.tagName === "INPUT" || elem.tagName === "TEXTAREA";
+    var origSelectionStart, origSelectionEnd;
+    if (isInput) {
+        // can just use the original source element for the selection and copy
+        target = elem;
+        origSelectionStart = elem.selectionStart;
+        origSelectionEnd = elem.selectionEnd;
+    } else {
+        // must use a temporary form element for the selection and copy
+        target = document.getElementById(targetId);
+        if (!target) {
+            var target = document.createElement("textarea");
+            target.style.position = "absolute";
+            target.style.left = "-9999px";
+            target.style.top = "0";
+            target.id = targetId;
+            document.body.appendChild(target);
+        }
+        target.textContent = elem.textContent;
+    }
+    // select the content
+    var currentFocus = document.activeElement;
+    target.removeAttribute("disabled");
+    target.focus();
+    target.setSelectionRange(0, target.value.length);
+    target.setAttribute("disabled", "disabled");
+    // copy the selection
+    var succeed;
+    try {
+    	  succeed = document.execCommand("copy");
+    } catch(e) {
+        succeed = false;
+    }
+    // restore original focus
+    if (currentFocus && typeof currentFocus.focus === "function") {
+        currentFocus.focus();
+    }
+
+    if (isInput) {
+        // restore prior selection
+        elem.setSelectionRange(origSelectionStart, origSelectionEnd);
+    } else {
+        // clear temporary content
+        target.textContent = "";
+    }
+    return succeed;
+}
 
