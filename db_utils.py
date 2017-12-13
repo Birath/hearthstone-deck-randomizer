@@ -70,11 +70,13 @@ def update_card(card, card_data):
     :param card_data: A dictionary with info about card
     :return: None
     """
+    print("Updating card")
     card.name = card_data["name"]
     card.hero = card_data["playerClass"]
     card.img_url = card_data["img"]
     card.dbfId = card_data["dbfId"]
     card.set = card_data["cardSet"]
+    card.rarity = card_data["rarity"]
     card.save()
 
 
@@ -84,9 +86,11 @@ def add_card(card_data):
     :param card_data: The data of the card to be added
     :return: None
     """
+    print("Adding new card")
     card = Card(name=card_data["name"],
                 hero=card_data["playerClass"],
                 img_url=card_data["img"],
                 dbfId=card_data["dbfId"],
-                set=card_data["cardSet"])
+                set=card_data["cardSet"],
+                rarity=card_data["rarity"])
     card.save()

@@ -9,6 +9,7 @@ class Card(models.Model):
     img_url = models.CharField(max_length=200)
     dbfId = models.CharField(max_length=200)
     set = models.CharField(max_length=200)
+    rarity = models.CharField(max_length=200)
 
     def __str__(self):
         return self.name
