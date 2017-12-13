@@ -44,7 +44,16 @@ def generate_deck(request):
                "shaman": 1066, "paladin": 671, "hunter": 31,
                "warlock": 893, "druid": 274}
     # False if bad api request, TODO add way to automatically update
-    standard_sets = get_current_standard_sets()
+    try:
+        standard_sets = get_current_standard_sets()
+    except KeyError:
+        print("Missing config file")
+        standard_sets = ["Basic", "Classic", "Whispers of the Old Gods",
+                         "One Night in Karazhan",
+                         "Mean Streets of Gadgetzan",
+                         "Journey to Un'Goro",
+                         "Knights of the Frozen Throne",
+                         "Kobolds & Catacombs"]
     if not standard_sets:
         standard_sets = ["Basic", "Classic", "Whispers of the Old Gods",
                          "One Night in Karazhan",
@@ -57,8 +66,8 @@ def generate_deck(request):
     for card in hero_collection:
         card_object = Card.objects.get(name__exact=card[0])
         # Only add cards from standard format if standard format is chosen
-        if deck_format == FormatType.FT_STANDARD and card_object.set \
-                not in standard_sets:
+        if (deck_format == FormatType.FT_STANDARD and
+                card_object.set not in standard_sets):
             pass
         else:
             # Add two cards if user owns more than two copies
@@ -82,21 +91,22 @@ def generate_deck(request):
             final_deck[final_deck.index(card)][1] = 2
         else:
             final_deck.append((card[0], 1))
-
     # Creates the deckstring the hearthstone python module
     db_deck = create_dbfid_deck(random_deck)
     deck = deckstrings.Deck()
     deck.cards = db_deck
     if desired_class == "random":
-        deck.heroes = [random.choice(list(hero_id.values()))]
+        desired_class = random.choice(list(hero_id.keys()))
+        deck.heroes = [hero_id[desired_class]]
     else:
-        deck.heroes = [hero_id[desired_class.lower()]]
+        deck.heroes = [hero_id[desired_class]]
     deck.format = deck_format
     deckstring = deck.as_deckstring
 
     context = {
         "cards": final_deck,
-        "deckstring": deckstring
+        "class": desired_class.title(),
+        "deckstring": deckstring,
     }
 
     return render(request, "deck.html", context)
@@ -104,7 +114,15 @@ def generate_deck(request):
 
 def import_collection(request):
     name = request.GET.get('name')
-    full_collection = hearthpwn_scarper(name)
+    try:
+        full_collection = hearthpwn_scarper(name)
+    except ConnectionError:
+        answer = "Something went wrong when connecting to Hearthpwn, " \
+                 "try again later "
+        data = {
+            "response": answer
+        }
+        return JsonResponse(data)
     if full_collection is False:
         answer = "Could not import collection. Make sure that your hearthpwn "\
                  "collection is set to public and try again"

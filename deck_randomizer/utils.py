@@ -14,7 +14,10 @@ def hearthpwn_scarper(user_name):
         user_name -- Hearthpwn user name
     """
     url = "http://www.hearthpwn.com/members/{}/collection".format(user_name)
-    page = requests.get(url)
+    try:
+        page = requests.get(url)
+    except requests.exceptions.ConnectionError:
+        raise ConnectionError
     response = BeautifulSoup(page.content, 'html.parser')
     if response.find(text='Not found') is not None \
             or response.find(text='This user has no collection') is not None \
