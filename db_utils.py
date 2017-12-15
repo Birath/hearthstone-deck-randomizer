@@ -77,6 +77,7 @@ def update_card(card, card_data):
     card.dbfId = card_data["dbfId"]
     card.set = card_data["cardSet"]
     card.rarity = card_data["rarity"]
+    card.cost = card_data["cost"]
     card.save()
 
 
@@ -92,5 +93,6 @@ def add_card(card_data):
                 img_url=card_data["img"],
                 dbfId=card_data["dbfId"],
                 set=card_data["cardSet"],
-                rarity=card_data["rarity"])
+                rarity=card_data["rarity"],
+                cost=card_data["cost"])
     card.save()

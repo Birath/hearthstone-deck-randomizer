@@ -57,6 +57,7 @@ def get_filtered_collection(collection_page, player_class):
                                                   [player_class.upper(),
                                                    "NONE"],
                                                   'class': 'owns-card'})
+    print(len(owned_cards))
     owned_cards_data = []
     for card_data in owned_cards:
         card_name = card_data['data-card-name']
@@ -107,7 +108,8 @@ def get_current_standard_sets():
     try:
         response.raise_for_status()
     except requests.exceptions.HTTPError:
-        return False
+        print("API request for standard sets failed")
+        raise ConnectionError
     try:
         sets = json.loads(response.text)
     except json.decoder.JSONDecodeError:

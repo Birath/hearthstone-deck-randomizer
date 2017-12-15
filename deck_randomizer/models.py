@@ -10,6 +10,7 @@ class Card(models.Model):
     dbfId = models.CharField(max_length=200)
     set = models.CharField(max_length=200)
     rarity = models.CharField(max_length=200)
+    cost = models.IntegerField()
 
     def __str__(self):
         return self.name

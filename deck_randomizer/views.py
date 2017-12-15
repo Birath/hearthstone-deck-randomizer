@@ -1,4 +1,5 @@
 import random
+import time
 
 from django.http import JsonResponse
 from django.shortcuts import render
@@ -27,8 +28,13 @@ def index(request):
 
 
 def generate_deck(request):
-
+    hero_id = {"priest": 813, "warrior": 7, "rogue": 930, "mage": 637,
+               "shaman": 1066, "paladin": 671, "hunter": 31,
+               "warlock": 893, "druid": 274}
+    gen_start_time = time.clock()
     desired_class = request.GET.get('hero')
+    if desired_class == "random":
+        desired_class = random.choice(list(hero_id.keys()))
     deck_format = request.GET.get('format')
 
     if deck_format == "standard":
@@ -39,31 +45,30 @@ def generate_deck(request):
     print("Getting collection from session")
     full_collection = request.session.get("full_collection")
 
-    hero_collection = get_filtered_collection(full_collection, desired_class)
-    hero_id = {"priest": 813, "warrior": 7, "rogue": 930, "mage": 637,
-               "shaman": 1066, "paladin": 671, "hunter": 31,
-               "warlock": 893, "druid": 274}
-    # False if bad api request, TODO add way to automatically update
-    try:
-        standard_sets = get_current_standard_sets()
-    except KeyError:
-        print("Missing config file")
-        standard_sets = ["Basic", "Classic", "Whispers of the Old Gods",
-                         "One Night in Karazhan",
-                         "Mean Streets of Gadgetzan",
-                         "Journey to Un'Goro",
-                         "Knights of the Frozen Throne",
-                         "Kobolds & Catacombs"]
-    if not standard_sets:
-        standard_sets = ["Basic", "Classic", "Whispers of the Old Gods",
-                         "One Night in Karazhan",
-                         "Mean Streets of Gadgetzan",
-                         "Journey to Un'Goro",
-                         "Knights of the Frozen Throne",
-                         "Kobolds & Catacombs"]
+    class_collection = get_filtered_collection(full_collection, desired_class)
 
+    start_time = time.clock()
+    # False if bad api request, TODO add way to automatically update
+    # try:
+    #    standard_sets = get_current_standard_sets()
+    # except ConnectionError:
+    standard_sets = ["Basic", "Classic", "Whispers of the Old Gods",
+                     "One Night in Karazhan",
+                     "Mean Streets of Gadgetzan",
+                     "Journey to Un'Goro",
+                     "Knights of the Frozen Throne",
+                     "Kobolds & Catacombs"]
+    rarity_colors = {
+        "Free": "#000",
+        "Common": "#000",
+        "Rare": "#0070dd",
+        "Epic": "#a335ee",
+        "Legendary": "#ff8000"
+    }
+    end_time = time.clock()
+    print("Standard request time", end_time - start_time)
     filtered_collection = []
-    for card in hero_collection:
+    for card in class_collection:
         card_object = Card.objects.get(name__exact=card[0])
         # Only add cards from standard format if standard format is chosen
         if (deck_format == FormatType.FT_STANDARD and
@@ -71,40 +76,52 @@ def generate_deck(request):
             pass
         else:
             # Add two cards if user owns more than two copies
-            if card[1] >= 2:
-                filtered_collection += [[card_object.name,
-                                         card_object.img_url, card[1],
-                                         card_object.dbfId]] * 2
+            card_amount = card[1]
+            if card_amount >= 2:
+                filtered_collection += [
+                                        [card_object.name,
+                                         card_object.img_url,
+                                         card_amount,
+                                         card_object.dbfId,
+                                         rarity_colors[card_object.rarity],
+                                         card_object.cost]
+                                        ] * 2
             else:
                 filtered_collection.append([card_object.name,
                                             card_object.img_url,
-                                            card[1], card_object.dbfId])
+                                            card_amount,
+                                            card_object.dbfId,
+                                            rarity_colors[card_object.rarity],
+                                            card_object.cost])
 
     # Create a deck by picking 30 random cards
     random_deck = random.sample(filtered_collection, 30)
 
     final_deck = []
+    # Merge duplicates
     for card in random_deck:
+        name = card[0]
+        rarity = card[4]
+        cost = card[5]
         if card == random_deck[0]:
-            final_deck.append((card[0], 1))
+            final_deck.append((name, 1, rarity, cost))
         elif card in final_deck:
             final_deck[final_deck.index(card)][1] = 2
         else:
-            final_deck.append((card[0], 1))
-    # Creates the deckstring the hearthstone python module
+            final_deck.append((name, 1, rarity, cost))
+    sorted_deck = sorted(final_deck, key=lambda x: x[3])
+
+    # Creates the deckstring using the hearthstone python module
     db_deck = create_dbfid_deck(random_deck)
     deck = deckstrings.Deck()
     deck.cards = db_deck
-    if desired_class == "random":
-        desired_class = random.choice(list(hero_id.keys()))
-        deck.heroes = [hero_id[desired_class]]
-    else:
-        deck.heroes = [hero_id[desired_class]]
+    deck.heroes = [hero_id[desired_class]]
     deck.format = deck_format
     deckstring = deck.as_deckstring
-
+    gen_end_time = time.clock()
+    print("Total gen time", gen_end_time - gen_start_time)
     context = {
-        "cards": final_deck,
+        "cards": sorted_deck,
         "class": desired_class.title(),
         "deckstring": deckstring,
     }
