@@ -15,72 +15,75 @@
     <title>Hearthstone deck randomizer</title>
 </head>
 <body>
-    <div class="row">
-        <div class="col s12 m5" id="forms">
-            <div class="row">
-                <div class="col s12">
-                    <h5>Hearthstone deck randomizer</h5>
-                    <form method="post" id="import-collection">
-                        <div class="row">
-                            <div class="col m8 s12">
-                                {% csrf_token %}
-                                {{ name_form }}
+    <div class="container">
+        <div class="row">
+            <!-- Forms -->
+            <div class="col s12 m12 l6" id="forms">
+                <h5>Hearthstone deck randomizer</h5>
+                <!-- Username form -->
+                <form method="post" id="import-collection">
+                    <div class="row">
+                        <div class="col m8 s12">
+                            {% csrf_token %}
+                            {{ name_form }}
+                        </div>
+                        <div class="col s12 m12">
+                            <button class="waves-effect waves-light btn" id="import-collection">Import collection</button>
+                        </div>
+                        <div class="col s12">
+                            <p id="import-response"></p>
+                            <div id="import-loader"></div>
+                        </div>
+                    </div>
+                </form>
+                <!-- Deck forms -->
+                <form method="post" id="deck-data">
+                    <div class="row">
+                        <div class="col m8 s12">
+                            {% csrf_token  %}
+                            <div class="input-field">
+                                {{ hero_form.hero }}
+                                {{ hero_form.hero.label_tag }}
                             </div>
-                            <div class="col s12 m12">
-                                <button class="waves-effect waves-light btn" id="import-collection">Import collection</button>
-                            </div>
-                            <div class="col s12">
-                                <p id="import-response"></p>
-                                <div id="import-loader"></div>
+                            <div class="input-field">
+                                {{ format_form.deck_format }}
+                                {{ format_form.deck_format.label_tag }}
                             </div>
                         </div>
-                    </form>
-
-                    <form method="post" id="deck-data">
-                        <div class="row">
-                            <div class="col m8 s12">
-                                {% csrf_token  %}
-                                <div class="input-field">
-                                    {{ hero_form.hero }}
-                                    {{ hero_form.hero.label_tag }}
-                                </div>
-                                <div class="input-field">
-                                    {{ format_form.deck_format }}
-                                    {{ format_form.deck_format.label_tag }}
-                                </div>
-                            </div>
-                            <div class="col m8 s12">
-                                <button class="waves-effect waves-light btn" id="deck-data">Generate Deck</button>
-                            </div>
+                        <div class="col m8 s12">
+                            <button class="waves-effect waves-light btn" id="deck-data">Generate Deck</button>
                         </div>
-
-
-                    </form>
-                </div>
+                    </div>
+                </form>
             </div>
-
-        </div>
-        <div class="col s12 m6">
-            <div class="card">
-                <div class="card-content">
-                    <div id="deck">
-                        {% if class %}
-                            <span class="card-title">Random {{ class }} deck</span>
-                        {% else %}
-                            <span class="card-title">Empty deck</span>
-                        {% endif %}
-                        <div class="input-field">
-                            <input disabled value="{{ deckstring }}" id="deckstring">
-                            <label for="deckstring" class="active">Deckstring</label>
-                            <button class="waves-effect waves-light btn" id="copyButton">Copy deckstring</button>
+            <!-- Deck content -->
+            <div class="col s12 m12 l6">
+                <div class="card">
+                    <div class="card-content">
+                        <div id="deck">
+                            <div class="row">
+                                <div class="col s12">
+                                    {% if class %}
+                                        <span class="card-title">Random {{ class }} deck</span>
+                                    {% else %}
+                                        <span class="card-title">Empty deck</span>
+                                    {% endif %}
+                                    <div class="input-field">
+                                        <input disabled value="{{ deckstring }}" id="deckstring">
+                                        <label for="deckstring" class="active">Deckstring</label>
+                                        <button class="waves-effect waves-light btn" id="copyButton">Copy deckstring</button>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="row big-loader" id="deck-content"></div>
+                            {% include 'deck.html' %}
                         </div>
-                        {% include 'deck.html' %}
                     </div>
                 </div>
             </div>
-
         </div>
     </div>
+
 
 
 <script src="https://code.jquery.com/jquery-3.2.1.min.js" integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4=" crossorigin="anonymous"></script>

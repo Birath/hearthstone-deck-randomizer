@@ -1,6 +1,19 @@
+html { overflow-y: scroll; }
+
 .card-name {
     font-weight: 600;
 }
+
 .card-amount {
     font-weight: 300;
+}
+
+.cost {
+    font-weight: 600;
+}
+
+.big-loader {
+    display: flex;
+    justify-content: center;
+    align-items: center;
 }
