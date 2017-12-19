@@ -154,3 +154,5 @@ fabric.properties
 # Project specific files
 config.ini
 static/admin/*
+deck_randomizer/static/deck_randomizer/css/materialize*
+deck_randomizer/static/deck_randomizer/js/materialize*

@@ -68,20 +68,6 @@ $(document).ready(function() {
     })
 });
 
-function copyDeckString() {
-    var copyText = document.getElementById("deckstring");
-    copyText.select();
-    var hello = document.execCommand('copy');
-    console.log(copyText.select());
-    try {
-        var successful = document.execCommand('copy');
-        var msg = successful ? 'successful' : 'unsuccessful';
-        console.log('Copying text command was ' + msg);
-    } catch (err) {
-        console.log('Oops, unable to copy');
-    }
-}
-
 // Taken from https://stackoverflow.com/questions/22581345/click-button-copy-to-clipboard-using-jquery
 
 

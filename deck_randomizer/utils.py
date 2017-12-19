@@ -118,3 +118,13 @@ def get_current_standard_sets():
         print("Response:", response.text)
         sys.exit(-1)
     return sets["standard"]
+
+
+def get_standard_sets():
+    standard_sets = ["Basic", "Classic", "Whispers of the Old Gods",
+                     "One Night in Karazhan",
+                     "Mean Streets of Gadgetzan",
+                     "Journey to Un'Goro",
+                     "Knights of the Frozen Throne",
+                     "Kobolds & Catacombs"]
+    return standard_sets
