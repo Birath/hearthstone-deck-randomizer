@@ -23,9 +23,9 @@ BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 SECRET_KEY = '4gt29j!ag-)rglxc&xgu@iz@5l&4%md-up@_th96bdu3x1=dj+'
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = False
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['hearthstonedeckrandomizer.tk', '138.68.97.81']
 
 
 # Application definition
@@ -38,7 +38,6 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'deck_randomizer.apps.DeckRandomizerConfig',
-    'widget_tweaks',
 ]
 
 MIDDLEWARE = [
