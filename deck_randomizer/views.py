@@ -15,16 +15,36 @@ from deck_randomizer.utils import hearthpwn_scarper, \
 
 # Create your views here.
 def index(request):
-    if request.method != 'POST':
-        hero_form = HeroForm()
-        name_form = NameForm()
-        format_form = FormatForm()
+    hero_form = HeroForm()
+    name_form = NameForm()
+    format_form = FormatForm()
+
+    if (request.session.get("full_collection", False) and
+            request.session.get("name", False)):
+        print("Session found in cookie")
+        name = request.session.get("name")
+        print(type(name))
+        name_form = NameForm(initial={'name': name})
+        cards_owned = get_amount_of_cards(
+            request.session.get("full_collection")
+        )
+        cards_owned_txt = "Imported {} from {}'s collection".format(
+                                                                   cards_owned,
+                                                                   name)
+        context = {
+            "name_form": name_form,
+            "format_form": format_form,
+            "hero_form": hero_form,
+            "card_amount": cards_owned_txt,
+        }
+    else:
         context = {
             "name_form": name_form,
             "format_form": format_form,
             "hero_form": hero_form
         }
-        return render(request, "index.html", context)
+
+    return render(request, "index.html", context)
 
 
 def generate_deck(request):
@@ -138,6 +158,7 @@ def import_collection(request):
 
     else:
         request.session["full_collection"] = full_collection
+        request.session["name"] = name
         cards_owned = get_amount_of_cards(full_collection)
         answer = "Imported {} cards from {}'s collection".format(cards_owned,
                                                                  name)

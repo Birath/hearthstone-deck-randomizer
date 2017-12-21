@@ -65,7 +65,7 @@ $(document).ready(function() {
     });
     $(document).on('click','#copyButton', function () {
         copyToClipboard(document.getElementById("deckstring"));
-    })
+    });
 });
 
 // Taken from https://stackoverflow.com/questions/22581345/click-button-copy-to-clipboard-using-jquery
