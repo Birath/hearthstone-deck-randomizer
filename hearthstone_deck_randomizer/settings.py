@@ -38,6 +38,7 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'deck_randomizer.apps.DeckRandomizerConfig',
+    'widget_tweaks',
 ]
 
 MIDDLEWARE = [
