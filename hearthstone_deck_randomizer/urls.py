@@ -15,8 +15,14 @@ Including another URLconf
 """
 from django.conf.urls import url
 from django.contrib import admin
+from django.views.generic.base import RedirectView
 
 from deck_randomizer import views
+
+favicon_view = RedirectView.as_view(
+    url='/static/deck_randomizer/img/favicon.ico',
+    permanent=True
+)
 
 urlpatterns = [
     url(r'^admin/', admin.site.urls),
@@ -25,5 +31,6 @@ urlpatterns = [
     url(r'^deck', views.generate_deck, name='generate_deck'),
     url(r'^submit', views.update_test, name='update'),
     url(r'^import_collection', views.import_collection,
-        name='import_collection')
+        name='import_collection'),
+    url(r'^favicon\.ico$', favicon_view)
 ]
