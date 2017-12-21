@@ -21,9 +21,7 @@ def index(request):
 
     if (request.session.get("full_collection", False) and
             request.session.get("name", False)):
-        print("Session found in cookie")
         name = request.session.get("name")
-        print(type(name))
         name_form = NameForm(initial={'name': name})
         cards_owned = get_amount_of_cards(
             request.session.get("full_collection")
