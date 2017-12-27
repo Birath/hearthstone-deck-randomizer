@@ -11,7 +11,8 @@ class FormatForm(forms.Form):
 
 
 class NameForm(forms.Form):
-    name = forms.CharField(label="Hearthpwn username")
+    name = forms.CharField(label="Hearthpwn username",
+                           initial="CompleteCollection")
 
 
 class HeroForm(forms.Form):
@@ -27,5 +28,7 @@ class HeroForm(forms.Form):
         ("druid", "Druid"),
         ("rogue", "Rogue")
     )
-    hero = forms.ChoiceField(widget=forms.Select, choices=OPTIONS,
-                             label="Class")
+    hero = forms.ChoiceField(widget=forms.Select,
+                             choices=OPTIONS,
+                             label="Class",
+                             )

@@ -79,12 +79,13 @@ def create_dbfid_deck(deck):
     seen = []
     res = []
     for card_data in deck:
+        dbfid = card_data[3]
         if card_data not in seen:
-            res.append((int(card_data[3]), 1))
+            res.append((int(dbfid), 1))
             seen.append(card_data)
         else:
-            card_to_update = res.index((int(card_data[3]), 1))
-            res[card_to_update] = (int(card_data[3]), 2)
+            card_to_update = res.index((int(dbfid), 1))
+            res[card_to_update] = (int(dbfid), 2)
     return res
 
 
@@ -117,3 +118,13 @@ def get_current_standard_sets():
         print("Response:", response.text)
         sys.exit(-1)
     return sets["standard"]
+
+
+def get_standard_sets():
+    standard_sets = ["Basic", "Classic", "Whispers of the Old Gods",
+                     "One Night in Karazhan",
+                     "Mean Streets of Gadgetzan",
+                     "Journey to Un'Goro",
+                     "Knights of the Frozen Throne",
+                     "Kobolds & Catacombs"]
+    return standard_sets

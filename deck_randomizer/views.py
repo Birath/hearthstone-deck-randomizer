@@ -9,22 +9,40 @@ from hearthstone.enums import FormatType
 from deck_randomizer.forms import FormatForm, NameForm, HeroForm
 from deck_randomizer.models import Card
 from deck_randomizer.utils import hearthpwn_scarper, \
-    get_current_standard_sets, create_dbfid_deck, get_filtered_collection, \
+    get_standard_sets, create_dbfid_deck, get_filtered_collection, \
     get_amount_of_cards
 
 
 # Create your views here.
 def index(request):
-    if request.method != 'POST':
-        hero_form = HeroForm()
-        name_form = NameForm()
-        format_form = FormatForm()
+    hero_form = HeroForm()
+    name_form = NameForm()
+    format_form = FormatForm()
+
+    if (request.session.get("full_collection", False) and
+            request.session.get("name", False)):
+        name = request.session.get("name")
+        name_form = NameForm(initial={'name': name})
+        cards_owned = get_amount_of_cards(
+            request.session.get("full_collection")
+        )
+        cards_owned_txt = "Imported {} from {}'s collection".format(
+                                                                   cards_owned,
+                                                                   name)
+        context = {
+            "name_form": name_form,
+            "format_form": format_form,
+            "hero_form": hero_form,
+            "card_amount": cards_owned_txt,
+        }
+    else:
         context = {
             "name_form": name_form,
             "format_form": format_form,
             "hero_form": hero_form
         }
-        return render(request, "index.html", context)
+
+    return render(request, "index.html", context)
 
 
 def generate_deck(request):
@@ -47,17 +65,8 @@ def generate_deck(request):
 
     class_collection = get_filtered_collection(full_collection, desired_class)
 
-    start_time = time.clock()
-    # False if bad api request, TODO add way to automatically update
-    # try:
-    #    standard_sets = get_current_standard_sets()
-    # except ConnectionError:
-    standard_sets = ["Basic", "Classic", "Whispers of the Old Gods",
-                     "One Night in Karazhan",
-                     "Mean Streets of Gadgetzan",
-                     "Journey to Un'Goro",
-                     "Knights of the Frozen Throne",
-                     "Kobolds & Catacombs"]
+    standard_sets = get_standard_sets()
+
     rarity_colors = {
         "Free": "#000",
         "Common": "#000",
@@ -65,8 +74,8 @@ def generate_deck(request):
         "Epic": "#a335ee",
         "Legendary": "#ff8000"
     }
-    end_time = time.clock()
-    print("Standard request time", end_time - start_time)
+
+
     filtered_collection = []
     for card in class_collection:
         card_object = Card.objects.get(name__exact=card[0])
@@ -109,6 +118,7 @@ def generate_deck(request):
             final_deck[final_deck.index(card)][1] = 2
         else:
             final_deck.append((name, 1, rarity, cost))
+    # Sort cards by mana cost
     sorted_deck = sorted(final_deck, key=lambda x: x[3])
 
     # Creates the deckstring using the hearthstone python module
@@ -146,6 +156,7 @@ def import_collection(request):
 
     else:
         request.session["full_collection"] = full_collection
+        request.session["name"] = name
         cards_owned = get_amount_of_cards(full_collection)
         answer = "Imported {} cards from {}'s collection".format(cards_owned,
                                                                  name)

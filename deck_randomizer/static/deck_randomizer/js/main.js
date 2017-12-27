@@ -11,7 +11,7 @@ $(document).ready(function() {
         '      </div>\n' +
         '    </div>\n' +
         '  </div>';
-    var bigRedLoader = '<div class="preloader-wrapper active big">\n' +
+    var bigRedLoader = '<div class="preloader-wrapper active big big-loader">\n' +
         '    <div class="spinner-layer spinner-red-only">\n' +
         '      <div class="circle-clipper left">\n' +
         '        <div class="circle"></div>\n' +
@@ -28,7 +28,7 @@ $(document).ready(function() {
     $('#deck-data').on('submit', function () {
         event.preventDefault();
         console.log('Clicked');
-        document.getElementById('deck').innerHTML = bigRedLoader;
+        document.getElementById('deck-content').innerHTML = bigRedLoader;
         $.ajax({
             url: 'deck',
             data: {
@@ -38,7 +38,7 @@ $(document).ready(function() {
             dataType: 'html',
             success: function (data) {
                 console.log('Loading html');
-                document.getElementById('deck').innerHTML = "";
+                // document.getElementById('big-loader').innerHTML = "";
                 $('#deck').html(data)
 
             }
@@ -65,22 +65,8 @@ $(document).ready(function() {
     });
     $(document).on('click','#copyButton', function () {
         copyToClipboard(document.getElementById("deckstring"));
-    })
+    });
 });
-
-function copyDeckString() {
-    var copyText = document.getElementById("deckstring");
-    copyText.select();
-    var hello = document.execCommand('copy');
-    console.log(copyText.select());
-    try {
-        var successful = document.execCommand('copy');
-        var msg = successful ? 'successful' : 'unsuccessful';
-        console.log('Copying text command was ' + msg);
-    } catch (err) {
-        console.log('Oops, unable to copy');
-    }
-}
 
 // Taken from https://stackoverflow.com/questions/22581345/click-button-copy-to-clipboard-using-jquery
 

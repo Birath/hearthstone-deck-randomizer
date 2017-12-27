@@ -15,15 +15,25 @@
                     <button class="waves-effect waves-light btn" id="copyButton">Copy deckstring</button>
                 </div>
             </div>
-            <div class="divider"></div>
          </div>
-        <div class="row">
+        <div class="row big-loader" id="deck-content">
             <div class="col s12">
-                <ul class="collection">
-                    {% for card_name, card_amount, card_rarity, card_cost in cards %}
-                        <li class="collection-item"><div><span class="card-name" style="color:{{ card_rarity }}">{{ card_name }}</span><span class="card-amount"> x {{ card_amount }}</span><span class="secondary-content" style="color:blue">{{ card_cost }}</span></div></li>
-                    {% endfor %}
-                </ul>
+                <table class="striped">
+                    <thead>
+                        <tr>
+                            <th>Name</th>
+                            <th>Cost</th>
+                        </tr>
+                    </thead>
+                    <tbody class="deck-content">
+                        {% for card_name, card_amount, card_rarity, card_cost in cards %}
+                            <tr>
+                                <td><span class="card-name" style="color:{{ card_rarity }}">{{ card_name }}</span><span class="card-amount"> x {{ card_amount }}</span></td>
+                                <td class="card-cost">{{ card_cost }}</td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
             </div>
         </div>
 
