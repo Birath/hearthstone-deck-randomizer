@@ -1,5 +1,6 @@
 html { overflow-y: scroll; }
 
+/* Deck content */
 .card-name {
     font-weight: 600;
 }
@@ -20,4 +21,20 @@ html { overflow-y: scroll; }
 
 .deck-content > tr > td {
     padding: 10px 5px;
+}
+
+/* Footer  */
+
+body {
+    display: flex;
+    min-height: 100vh;
+    flex-direction: column;
+  }
+
+main {
+    flex: 1 0 auto;
+}
+
+.footer-copyright {
+    text-align: center;
 }

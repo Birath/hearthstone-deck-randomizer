@@ -26,9 +26,10 @@ def index(request):
         cards_owned = get_amount_of_cards(
             request.session.get("full_collection")
         )
-        cards_owned_txt = "Imported {} from {}'s collection".format(
-                                                                   cards_owned,
-                                                                   name)
+        cards_owned_txt = "Imported {} cards ({} unique) from {}'s " \
+                          "collection".format(cards_owned[1],
+                                              cards_owned[0],
+                                              name)
         context = {
             "name_form": name_form,
             "format_form": format_form,
@@ -151,15 +152,17 @@ def import_collection(request):
         }
         return JsonResponse(data)
     if full_collection is False:
-        answer = "Could not import collection. Make sure that your hearthpwn "\
-                 "collection is set to public and try again"
+        answer = "Could not import collection. Make sure that your " \
+                 "<a href='http://www.hearthpwn.com/members/{}/collection'>" \
+                 "Hearthpwn collection</a> is set to public " \
+                 "and try again.".format(name)
 
     else:
         request.session["full_collection"] = full_collection
         request.session["name"] = name
         cards_owned = get_amount_of_cards(full_collection)
-        answer = "Imported {} cards from {}'s collection".format(cards_owned,
-                                                                 name)
+        answer = "Imported {} cards ({} unique) from " \
+                 "{}'s collection".format(cards_owned[1], cards_owned[0], name)
     data = {
         "response": answer
     }
