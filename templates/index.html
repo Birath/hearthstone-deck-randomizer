@@ -23,6 +23,7 @@
     <title>Hearthstone deck randomizer</title>
 </head>
 <body>
+    <main>
     <div class="container">
         <div class="row">
             <!-- Forms -->
@@ -37,12 +38,13 @@
                         </div>
                         <div class="col s12 m12">
                             <button class="waves-effect waves-light btn" id="import-collection">Import collection</button>
+                            <a class="btn waves-effect waves-light modal-trigger" href="#modal1">?</a>
                         </div>
                         <div class="col s12">
                             {% if card_amount %}
                                 <p id="import-response">{{ card_amount }}</p>
                             {% else %}
-                                <p id="import-response"></p>
+                                <p id="import-response">No collection have been imported</p>
                             {% endif %}
                             <div id="import-loader"></div>
                         </div>
@@ -53,17 +55,34 @@
                     <div class="row">
                         <div class="col m8 s12">
                             {% csrf_token  %}
+                            {% load widget_tweaks %}
                             <div class="input-field">
-                                {{ hero_form.hero }}
+                                <select class="icons" id="id_hero">
+                                {% for id, name in hero_form.hero.field.choices %}
+                                    {% with 'deck_randomizer/img/Class_'|add:name|add:'.svg' as class_img %}
+                                        <option class="left-circle" data-icon="{% static class_img %}" value="{{ id }}">{{ name }}</option>
+                                    {% endwith %}
+                                {% endfor %}
+                                </select>
                                 {{ hero_form.hero.label_tag }}
+                                {% comment %}
+                                {{ hero_form.hero }}
+
+                                {% endcomment %}
                             </div>
                             <div class="input-field">
-                                {{ format_form.deck_format }}
+                                <select class="icons" id="id_deck_format">
+                                    {% for id, name in format_form.deck_format.field.choices %}
+                                        {% with 'deck_randomizer/img/Mode_'|add:name|add:'.svg' as format_img %}
+                                            <option class="left-circle" data-icon="{% static format_img %}" value="{{ id }}">{{ name }}</option>
+                                        {% endwith %}
+                                    {% endfor %}
+                                </select>
                                 {{ format_form.deck_format.label_tag }}
                             </div>
                         </div>
                         <div class="col m8 s12">
-                            <button class="waves-effect waves-light btn" id="deck-data">Generate Deck</button>
+                            <button class=" generate_deck waves-effect waves-light btn" disabled="disabled" id="deck-data">Generate Deck</button>
                         </div>
                     </div>
                 </form>
@@ -95,7 +114,29 @@
             </div>
         </div>
     </div>
+    </main>
+    <!-- Modal structure -->
+    <div id="modal1" class="modal">
+        <div class="modal-content">
+            <h4>Instructions</h4>
+            <p>If you want to generates decks based on your personal collection you must do the following steps:</p>
+            <ol>
+                <li>Create an account on <a href="http://www.hearthpwn.com/">Hearthpwn</a>.</li>
+                <li>Sync your Hearthpwn collection with your Hearthstone collection, either manually or by using <a href="https://www.innkeeper.com/">Innkepper</a> (Recommended).</li>
+                <li>Check that your collection on Hearthpwn is set to public.</li>
+                <li>Type your Hearthpwn username and press import collection!</li>
+            </ol>
+            <p>If you want to generate random decks based on all available cards, use the username CompleteCollection.</p>
+        </div>
+    </div>
 
+    <footer class="page-footer white">
+      <div class="footer-copyright white">
+        <div class="container">
+            <p class="grey-text">Send any questions or suggestions to bjorn.birath@gmail.com</p>
+        </div>
+      </div>
+    </footer>
 
 
 <script src="https://code.jquery.com/jquery-3.2.1.min.js" integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4=" crossorigin="anonymous"></script>
