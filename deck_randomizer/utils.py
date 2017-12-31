@@ -39,9 +39,11 @@ def get_amount_of_cards(collection_content):
     :return: Total amount of cards in a collection
     """
     collection_page = BeautifulSoup(collection_content.encode(), 'html.parser')
-    amount_of_cards = len(collection_page.find_all(True,
-                                                   {'class': 'owns-card'}))
-    return amount_of_cards
+    owned_cards = collection_page.find_all(True, {'class': 'owns-card'})
+    unique_amount_of_cards = len(owned_cards)
+    total_amount = sum([int(card.find(
+            class_='inline-card-count')['data-card-count']) for card in owned_cards])
+    return unique_amount_of_cards, total_amount
 
 
 def get_filtered_collection(collection_page, player_class):

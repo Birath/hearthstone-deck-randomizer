@@ -22,12 +22,16 @@ $(document).ready(function() {
         '      </div>\n' +
         '    </div>\n' +
         '  </div>';
+    // Initializes Materialize
     $('select').material_select();
+    $('.modal').modal();
     // Sends chosen class and format to the server and which generate
     // and returns a deck which is rendered using jQuery
     $('#deck-data').on('submit', function () {
         event.preventDefault();
         console.log('Clicked');
+        console.log($('#id_hero').val());
+        console.log($('#id_deck_format').val());
         document.getElementById('deck-content').innerHTML = bigRedLoader;
         $.ajax({
             url: 'deck',
@@ -60,16 +64,28 @@ $(document).ready(function() {
             success: function (data) {
                 document.getElementById('import-loader').innerHTML = "";
                 document.getElementById('import-response').innerHTML = data['response']
+                enableDeckGen()
             }
         })
     });
     $(document).on('click','#copyButton', function () {
         copyToClipboard(document.getElementById("deckstring"));
     });
+    enableDeckGen()
 });
 
 // Taken from https://stackoverflow.com/questions/22581345/click-button-copy-to-clipboard-using-jquery
 
+function showCopyToast(message) {
+    Materialize.toast(message, 1500)
+}
+
+function enableDeckGen() {
+    if ($('#import-response').text().indexOf('cards') >= 0) {
+        console.log("Enabled generate deck");
+        $('.generate_deck').prop("disabled", false);
+    }
+}
 
 function copyToClipboard(elem) {
 	  // create hidden text element, if it doesn't already exist
@@ -104,8 +120,10 @@ function copyToClipboard(elem) {
     // copy the selection
     var succeed;
     try {
-    	  succeed = document.execCommand("copy");
+        showCopyToast('Deckstring copied');
+        succeed = document.execCommand("copy");
     } catch(e) {
+        showCopyToast('Failed to copy deckstring');
         succeed = false;
     }
     // restore original focus
