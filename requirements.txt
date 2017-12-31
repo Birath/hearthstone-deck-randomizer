@@ -2,3 +2,4 @@ hearthstone
 django
 requests
 bs4
+django_widget_tweaks
