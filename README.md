@@ -2,7 +2,7 @@
 # hearthstone-deck-randomizer
 Hearthstone Deck Randomzer is a web app that lets you generate random decks for Hearthstone based on your personal collection.
 ## Usage
-The app gets users collection from the website [Hearthpwn](http://www.hearthpwn.com/). To sync your Hearthstone collection with Hearthpwn I recommend using the program [Innerkeeper](https://www.innkeeper.com/) which does that for you automatically. 
+The app gets users Hearthstone collection from the website [Hearthpwn](http://www.hearthpwn.com/). To sync your Hearthstone collection with Hearthpwn I recommend using the program [Innkeeper](https://www.innkeeper.com/) which does that for you automatically. 
 ## Installation
 Requires django, requests, beautifulsoup 4 and [python-hearthstone](https://github.com/HearthSim/python-hearthstone). These can all be installed by running the command
 ```
